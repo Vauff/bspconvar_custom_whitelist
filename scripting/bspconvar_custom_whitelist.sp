@@ -9,7 +9,7 @@ public Plugin myinfo =
 	name = "BSP ConVar Custom Whitelist",
 	author = "Vauff",
 	description = "Changes the file that CS:GO reads the BSP cvar whitelist from",
-	version = "1.0",
+	version = "1.0.1",
 	url = "https://github.com/Vauff/bspconvar_custom_whitelist"
 };
 
@@ -18,6 +18,9 @@ KeyValues g_kvWhitelist;
 
 public void OnPluginStart()
 {
+	if (GetEngineVersion() != Engine_CSGO)
+		SetFailState("This plugin only runs on CS:GO!");
+
 	char path[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, path, sizeof(path), "gamedata/bspconvar_custom_whitelist.games.txt");
 
