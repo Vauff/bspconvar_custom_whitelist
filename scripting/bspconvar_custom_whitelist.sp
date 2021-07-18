@@ -9,12 +9,14 @@ public Plugin myinfo =
 	name = "BSP ConVar Custom Whitelist",
 	author = "Vauff",
 	description = "Changes the file that CS:GO reads the BSP cvar whitelist from",
-	version = "1.0.1",
+	version = "1.0.2",
 	url = "https://github.com/Vauff/bspconvar_custom_whitelist"
 };
 
 Handle g_hIsWhiteListedCmd;
 KeyValues g_kvWhitelist;
+
+char g_sMapName[PLATFORM_MAX_PATH];
 
 public void OnPluginStart()
 {
@@ -51,17 +53,36 @@ public void OnMapStart()
 
 	if (!g_kvWhitelist.ImportFromFile("bspconvar_custom_whitelist.txt"))
 		SetFailState("Can't find bspconvar_custom_whitelist.txt, make sure you've made a copy of the default whitelist using this filename");
+	
+	GetCurrentMap(g_sMapName, sizeof(g_sMapName));
 }
 
 public MRESReturn Detour_IsWhiteListedCmd(DHookReturn hReturn, DHookParam hParams)
 {
 	char command[128];
 	DHookGetParamString(hParams, 1, command, sizeof(command));
-
+	
 	if (g_kvWhitelist.GetNum(command) == 1)
 		DHookSetReturn(hReturn, true);
+	else if (IsMapWhitelistPresent(command))
+	    DHookSetReturn(hReturn, true);
 	else
-		DHookSetReturn(hReturn, false);
+	    DHookSetReturn(hReturn, false);
 
 	return MRES_Supercede;
+}
+
+bool IsMapWhitelistPresent(const char[] convar)
+{
+    if (g_kvWhitelist.JumpToKey(g_sMapName))
+    {
+        if (g_kvWhitelist.GetNum(convar) == 1) 
+        {
+            g_kvWhitelist.Rewind();
+            return true;
+        }
+    }
+    
+    g_kvWhitelist.Rewind();
+    return false;
 }
