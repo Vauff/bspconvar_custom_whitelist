@@ -16,6 +16,8 @@ public Plugin myinfo =
 Handle g_hIsWhiteListedCmd;
 KeyValues g_kvWhitelist;
 
+char g_sMapName[PLATFORM_MAX_PATH];
+
 public void OnPluginStart()
 {
 	if (GetEngineVersion() != Engine_CSGO)
@@ -51,17 +53,35 @@ public void OnMapStart()
 
 	if (!g_kvWhitelist.ImportFromFile("bspconvar_custom_whitelist.txt"))
 		SetFailState("Can't find bspconvar_custom_whitelist.txt, make sure you've made a copy of the default whitelist using this filename");
+	
+	GetCurrentMap(g_sMapName, sizeof(g_sMapName));
 }
 
 public MRESReturn Detour_IsWhiteListedCmd(DHookReturn hReturn, DHookParam hParams)
 {
 	char command[128];
 	DHookGetParamString(hParams, 1, command, sizeof(command));
-
-	if (g_kvWhitelist.GetNum(command) == 1)
+	
+	if (GetMapWhitelistValue(command) == 1)
+		DHookSetReturn(hReturn, true);
+	else if (GetMapWhitelistValue(command) == 0)
+		DHookSetReturn(hReturn, false);
+	else if (g_kvWhitelist.GetNum(command) == 1)
 		DHookSetReturn(hReturn, true);
 	else
 		DHookSetReturn(hReturn, false);
 
 	return MRES_Supercede;
+}
+
+int GetMapWhitelistValue(const char[] convar)
+{
+	if (g_kvWhitelist.JumpToKey(g_sMapName))
+	{
+		int retValue = g_kvWhitelist.GetNum(convar, -1);
+		g_kvWhitelist.Rewind();
+		return retValue;
+	}
+
+	return -1;
 }
