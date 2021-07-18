@@ -65,24 +65,24 @@ public MRESReturn Detour_IsWhiteListedCmd(DHookReturn hReturn, DHookParam hParam
 	if (g_kvWhitelist.GetNum(command) == 1)
 		DHookSetReturn(hReturn, true);
 	else if (IsMapWhitelistPresent(command))
-	    DHookSetReturn(hReturn, true);
+		DHookSetReturn(hReturn, true);
 	else
-	    DHookSetReturn(hReturn, false);
+		DHookSetReturn(hReturn, false);
 
 	return MRES_Supercede;
 }
 
 bool IsMapWhitelistPresent(const char[] convar)
 {
-    if (g_kvWhitelist.JumpToKey(g_sMapName))
-    {
-        if (g_kvWhitelist.GetNum(convar) == 1) 
-        {
-            g_kvWhitelist.Rewind();
-            return true;
-        }
-    }
-    
-    g_kvWhitelist.Rewind();
-    return false;
+	if (g_kvWhitelist.JumpToKey(g_sMapName))
+	{
+		if (g_kvWhitelist.GetNum(convar) == 1) 
+		{
+			g_kvWhitelist.Rewind();
+			return true;
+		}
+	}
+
+	g_kvWhitelist.Rewind();
+	return false;
 }
