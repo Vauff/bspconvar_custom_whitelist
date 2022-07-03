@@ -22,10 +22,6 @@ Advanced users can also configure map specific overrides by adding new sections 
 }
 ```
 
-## Requirements
-
-- [DHooks](https://forums.alliedmods.net/showpost.php?p=2588686&postcount=589)
-
 ## Installation
 
 - Install the plugin as you normally would, whether by compiling the .sp or using the pre-compiled .smx
